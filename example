@@ -1,0 +1,6 @@
+#!/bin/sh                                        
+set -e
+
+# assuming you saved the realpath-compat file next to this script
+my_real_path="$(./realpath-compat "$0")" 
+echo "This script's real path is: ${my_real_path}, and that's true even if you call it via a symlink."
