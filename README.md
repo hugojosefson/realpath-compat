@@ -1,6 +1,7 @@
 # realpath-compat
 
-An implementation of realpath(1) that should work everywhere.
+An implementation of [realpath(1)](https://linux.die.net/man/1/realpath) that
+should work everywhere.
 
 ## Installation
 
