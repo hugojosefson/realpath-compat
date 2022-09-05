@@ -42,6 +42,10 @@ realpath_compat(){ if [ $# -eq 0 ];then echo "Usage: realpath_compat FILE">&2;re
 
 ## Usage
 
+Call the function, with some file(s) as argument(s).
+
+Example:
+
 ```sh
 #!/bin/sh
 set -e
