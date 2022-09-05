@@ -5,41 +5,14 @@ should work everywhere.
 
 ## Installation
 
-Copy this function into your shell script, or source it from a file.
-
-```sh
-realpath_compat() {
-  # if no arguments, print usage
-  if [ $# -eq 0 ]; then
-    echo "Usage: realpath_compat FILE [FILE ...]"
-    return 1
-  fi
-
-  # repeat for each argument
-  while [ $# -gt 0 ]; do
-    file="$1"
-    shift
-
-    if [ ! -e "$file" ]; then
-      echo "realpath_compat: $file: No such file or directory"
-      return 1
-    fi
-
-    realpath "$file" 2>/dev/null ||
-      readlink -f "$file" 2>/dev/null ||
-      zsh -c 'echo ${0:A}' "$file" 2>/dev/null ||
-      python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null ||
-      node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null ||
-      echo "realpath_compat: $file: Could not resolve real path" >&2
-  done
-}
-```
-
-Alternatively, use the minified version on one line:
+Copy this function into your shell script:
 
 ```sh
 realpath_compat(){ if [ $# -eq 0 ];then echo "Usage: realpath_compat FILE [FILE ...]">&2;return 1;fi;while [ $# -gt 0 ];do file="$1";shift;if ! [ -e "$file" ];then echo "realpath_compat: $file: No such file or directory">&2;return 1;fi;realpath "$file" 2>/dev/null||readlink -f "$file" 2>/dev/null||zsh -c 'echo ${0:A}' "$file" 2>/dev/null||python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null||node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null||echo "realpath_compat: $file: Could not resolve real path">&2;done;}
 ```
+
+Alternatively, copy the non-minified version found in
+[realpath-compat](realpath-compat#L6-L30).
 
 ## Usage
 
