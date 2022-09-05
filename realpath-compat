@@ -6,7 +6,7 @@ set -e
 realpath_compat() {
   # if no arguments, print usage
   if [ $# -eq 0 ]; then
-    echo "Usage: realpath_compat FILE"
+    echo "Usage: realpath_compat FILE [FILE ...]"
     return 1
   fi
 
@@ -25,7 +25,7 @@ realpath_compat() {
       zsh -c 'echo ${0:A}' "$file" 2>/dev/null ||
       python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null ||
       node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null ||
-      echo "$0: could not find real path for \"$file\"" >&2
+      echo "realpath_compat: $file: Could not resolve real path" >&2
   done
 }
 
