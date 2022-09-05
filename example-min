@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+realpath_compat(){ if [ $# -eq 0 ];then echo "Usage: realpath_compat FILE">&2;return 1;fi;while [ $# -gt 0 ];do file="$1";shift;if ! [ -e "$file" ];then echo "realpath_compat: $file: No such file or directory">&2;return 1;fi;realpath "$file" 2>/dev/null||readlink -f "$file" 2>/dev/null||zsh -c 'echo ${0:A}' "$file" 2>/dev/null||python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null||node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null||echo "$0: could not find real path for \"$file\"">&2;done;}
+
+my_real_path="$(realpath_compat "$0")"
+echo "This script's real path is: ${my_real_path}, and that's true even if you call it via a symlink."

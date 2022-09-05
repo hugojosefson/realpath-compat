@@ -4,8 +4,41 @@ An implementation of realpath(1) that should work everywhere.
 
 ## Installation
 
-Put the file anywhere you like, for example next to scripts where you need the
-functionality to work on any POSIX-y platform.
+Copy this function into your shell script, or source it from a file.
+
+```sh
+realpath_compat() {
+  # if no arguments, print usage
+  if [ $# -eq 0 ]; then
+    echo "Usage: realpath_compat FILE [FILE ...]"
+    return 1
+  fi
+
+  # repeat for each argument
+  while [ $# -gt 0 ]; do
+    file="$1"
+    shift
+
+    if [ ! -e "$file" ]; then
+      echo "realpath_compat: $file: No such file or directory"
+      return 1
+    fi
+
+    realpath "$file" 2>/dev/null ||
+      readlink -f "$file" 2>/dev/null ||
+      zsh -c 'echo ${0:A}' "$file" 2>/dev/null ||
+      python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null ||
+      node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null ||
+      echo "realpath_compat: $file: Could not resolve real path" >&2
+  done
+}
+```
+
+Alternatively, use the minified version on one line:
+
+```sh
+realpath_compat(){ if [ $# -eq 0 ];then echo "Usage: realpath_compat FILE">&2;return 1;fi;while [ $# -gt 0 ];do file="$1";shift;if ! [ -e "$file" ];then echo "realpath_compat: $file: No such file or directory">&2;return 1;fi;realpath "$file" 2>/dev/null||readlink -f "$file" 2>/dev/null||zsh -c 'echo ${0:A}' "$file" 2>/dev/null||python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null||node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null||echo "$0: could not find real path for \"$file\"">&2;done;}
+```
 
 ## Usage
 
@@ -13,8 +46,9 @@ functionality to work on any POSIX-y platform.
 #!/bin/sh
 set -e
 
-# assuming you saved the realpath-compat file next to this script
-my_real_path="$(./realpath-compat "$0")"
+realpath_compat(){ if [ $# -eq 0 ];then echo "Usage: realpath_compat FILE">&2;return 1;fi;while [ $# -gt 0 ];do file="$1";shift;if ! [ -e "$file" ];then echo "realpath_compat: $file: No such file or directory">&2;return 1;fi;realpath "$file" 2>/dev/null||readlink -f "$file" 2>/dev/null||zsh -c 'echo ${0:A}' "$file" 2>/dev/null||python3 -c "import os; import sys; print(os.path.realpath(sys.argv[1]))" "$file" 2>/dev/null||node -e "console.log(require('fs').realpathSync(process.argv[1]))" "$file" 2>/dev/null||echo "$0: could not find real path for \"$file\"">&2;done;}
+
+my_real_path="$(realpath_compat "$0")"
 echo "This script's real path is: ${my_real_path}, and that's true even if you call it via a symlink."
 ```
 
